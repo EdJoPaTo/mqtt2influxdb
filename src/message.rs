@@ -44,7 +44,7 @@ fn floatify(payload: &str) -> Option<f64> {
 
 /// Influx Line Protocol Escape
 fn line_protocol_escape(s: &str) -> String {
-    s.replace(" ", "\\ ").replace(",", "\\,")
+    s.replace(' ', "\\ ").replace(',', "\\,")
 }
 
 #[cfg(test)]
