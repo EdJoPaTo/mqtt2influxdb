@@ -2,7 +2,8 @@
 
 > Subscribe to MQTT topics and push them to InfluxDB 1.x or v2
 
-Something like [Telegraf](https://github.com/influxdata/telegraf) for MQTT → InfluxDB has their downsides which sparked the creation of this tool.
+Something like [Telegraf](https://github.com/influxdata/telegraf) for MQTT like it does with `inputs.mqtt_consumer` and `output.influxdb`.
+Telegraf has its downsides which sparked the creation of this tool.
 
 ## Features
 
