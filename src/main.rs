@@ -30,18 +30,20 @@ async fn main() {
         .map(std::string::ToString::to_string)
         .collect();
 
+    let influx_host = &matches.value_of("influx-host").unwrap();
     let influxdb = influxdb::Influxdb::new(
-        matches.value_of("influx-host").unwrap(),
+        influx_host,
         matches.value_of("influx-token"),
         matches.value_of("influx-database"),
         matches.value_of("influx-org"),
         matches.value_of("influx-bucket"),
     )
     .await;
-    eprintln!("InfluxDB connected.");
+    eprintln!("InfluxDB {} connected.", influx_host);
 
+    let mqtt_broker = &matches.value_of("mqtt-broker").unwrap();
     let mut receiver = mqtt::connect(
-        matches.value_of("mqtt-broker").unwrap(),
+        mqtt_broker,
         matches
             .value_of("mqtt-port")
             .and_then(|s| s.parse().ok())
@@ -52,7 +54,7 @@ async fn main() {
         matches.is_present("verbose"),
     )
     .await;
-    eprintln!("MQTT connected.");
+    eprintln!("MQTT {} connected.", mqtt_broker);
 
     let mut linebuffer = LineBuffer::new(buffer_age, buffer_amount);
     eprintln!("Startup done. Listening to topics now…");
