@@ -1,0 +1,12 @@
+[Unit]
+Description=Run mqtt2influxdb
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=true
+ExecStart=/usr/local/bin/mqtt2influxdb
+
+[Install]
+WantedBy=multi-user.target
