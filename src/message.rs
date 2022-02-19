@@ -14,17 +14,27 @@ impl Message {
         }
     }
 
+    /// Output as [Line Protocol](https://docs.influxdata.com/influxdb/v2.1/reference/syntax/line-protocol/)
     pub fn into_line_protocol(self) -> Option<String> {
         let value = String::from_utf8(self.payload)
             .ok()
             .and_then(|s| floatify(&s))?;
         Some(format!(
-            "measurement,topic={} value={} {}",
-            line_protocol_escape(&self.topic),
+            "measurement,{} value={} {}",
+            topic_tags(&self.topic),
             value,
             self.nanos
         ))
     }
+}
+
+#[test]
+fn e2e() {
+    let message = Message::new(1337, "foo/bar".into(), b"42".to_vec());
+    assert_eq!(
+        message.into_line_protocol().unwrap(),
+        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topic-1=bar,topic-2=foo value=42 1337",
+    );
 }
 
 /// Assume floats of the payload, otherwise return None
@@ -40,11 +50,6 @@ fn floatify(payload: &str) -> Option<f64> {
             _ => None,
         }
     }
-}
-
-/// Influx Line Protocol Escape
-fn line_protocol_escape(s: &str) -> String {
-    s.replace(' ', "\\ ").replace(',', "\\,")
 }
 
 #[cfg(test)]
@@ -83,4 +88,39 @@ fn floatify_empty() {
 #[test]
 fn floatify_string() {
     assert!(floatify("whatever").is_none());
+}
+
+/// Influx Line Protocol Escape
+fn line_protocol_escape(s: &str) -> String {
+    s.replace(' ', "\\ ").replace(',', "\\,")
+}
+
+fn topic_tags(topic: &str) -> String {
+    let topic = line_protocol_escape(topic);
+    let splitted = topic.split('/').collect::<Vec<_>>();
+    let mut tags = Vec::with_capacity(1 + 3 + splitted.len());
+    tags.push(format!("topic={}", topic));
+    for (i, part) in splitted.iter().enumerate() {
+        tags.push(format!("topic{}={}", i + 1, part));
+    }
+    for (i, part) in splitted.iter().rev().take(3).enumerate() {
+        tags.push(format!("topic-{}={}", i + 1, part));
+    }
+    tags.join(",")
+}
+
+#[test]
+fn topic_tags_short_works() {
+    assert_eq!(
+        topic_tags("foo/bar"),
+        "topic=foo/bar,topic1=foo,topic2=bar,topic-1=bar,topic-2=foo",
+    );
+}
+
+#[test]
+fn topic_tags_long_works() {
+    assert_eq!(
+        topic_tags("base/foo/bar/test"),
+        "topic=base/foo/bar/test,topic1=base,topic2=foo,topic3=bar,topic4=test,topic-1=test,topic-2=bar,topic-3=foo",
+    );
 }
