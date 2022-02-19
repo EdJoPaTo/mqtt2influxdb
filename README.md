@@ -11,6 +11,7 @@ Telegraf has its downsides which sparked the creation of this tool.
 - Telegraf publishes retained messages on startup. Retained messages have happened at some point in time. Time series databases are made for exact times, not some undefined times. This tool only pushes values to InfluxDB when the time is known (right when they are published/received).
 - Telegraf uses a loop every n seconds which gets the timing of MQTT messages wrong. This tool handles MQTT messages exactly when they arrive (and buffers them for better performance).
 - Some devices use values like `true` or `on` which are annoying to visualize. This tool migrates values like this into `1.0` and `0.0`.
+- Telegraf publishes the values with a `topic` tag. This is fine but results in a lot of regular expressions in Grafana. This tool also sets the tags `topic1`, `topic2`, … and from the end with `topic-1`, `topic-2`, … (negative numbers). For example for topic `foo/bar/test` this results in the following tags: `topic1=foo`, `topic2=bar`, `topic3=test` and from the end `topic-1=test`, `topic-2=bar` and `topic-3=foo`. Creating queries with them is way easier and probably also faster to compute for InfluxDB.
 
 ## Usage
 
