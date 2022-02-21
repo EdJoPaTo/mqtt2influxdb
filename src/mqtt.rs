@@ -14,7 +14,7 @@ pub async fn connect(
     password: Option<&str>,
     topics: Vec<String>,
     verbose: bool,
-) -> Receiver<Message> {
+) -> (AsyncClient, Receiver<Message>) {
     let client_id = format!("mqtt2influxdb-{:x}", rand::random::<u32>());
     let mut mqttoptions = MqttOptions::new(client_id, broker, port);
 
@@ -37,6 +37,7 @@ pub async fn connect(
 
     let (sender, receiver) = channel(100);
 
+    let resultclient = client.clone();
     task::spawn(async move {
         loop {
             let event = eventloop.poll().await;
@@ -75,7 +76,7 @@ pub async fn connect(
         }
     });
 
-    receiver
+    (resultclient, receiver)
 }
 
 async fn subscribe(client: &AsyncClient, topics: Vec<String>) -> Result<(), rumqttc::ClientError> {

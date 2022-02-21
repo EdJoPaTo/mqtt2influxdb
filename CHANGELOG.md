@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Handle termination signals (Ctrl-C, SIGTERM, …) and send buffer before closing
+
 ### Fixes
 
 - Empty MQTT messages are no longer assumed as `0.0`. Clearing retained messages for example are empty messages.

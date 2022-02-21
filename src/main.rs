@@ -4,6 +4,7 @@ use tokio::sync::mpsc::error::TryRecvError;
 use tokio::time::sleep;
 
 mod cli;
+mod exit_handler;
 mod influxdb;
 mod message;
 mod mqtt;
@@ -42,7 +43,7 @@ async fn main() {
     eprintln!("InfluxDB {} connected.", influx_host);
 
     let mqtt_broker = &matches.value_of("mqtt-broker").unwrap();
-    let mut receiver = mqtt::connect(
+    let (client, mut receiver) = mqtt::connect(
         mqtt_broker,
         matches
             .value_of("mqtt-port")
@@ -56,9 +57,20 @@ async fn main() {
     .await;
     eprintln!("MQTT {} connected.", mqtt_broker);
 
+    let quit = exit_handler::ExitHandler::new();
+
     eprintln!("Startup done. Listening to topics now…");
 
+    let mut error = false;
     loop {
+        if quit.is_exiting() {
+            client
+                .disconnect()
+                .await
+                .expect("failed to disconnect MQTT");
+            break;
+        }
+
         match receiver.try_recv() {
             Ok(message) => {
                 if let Some(line) = message.into_line_protocol() {
@@ -66,8 +78,23 @@ async fn main() {
                 }
             }
             Err(TryRecvError::Empty) => sleep(Duration::from_millis(50)).await,
-            Err(TryRecvError::Disconnected) => panic!("MQTT sender is gone"),
+            Err(TryRecvError::Disconnected) => {
+                eprintln!("MQTT sender is gone");
+                error = true;
+                break;
+            }
         }
         influxdb.do_loop().await;
+    }
+
+    while let Some(message) = receiver.recv().await {
+        if let Some(line) = message.into_line_protocol() {
+            influxdb.push(line).await;
+        }
+    }
+    influxdb.async_drop().await;
+
+    if error {
+        std::process::exit(-1);
     }
 }

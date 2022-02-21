@@ -112,6 +112,13 @@ impl Influxdb {
             }
         }
     }
+
+    /// This is a workaround as impl Drop for Influxdb cant do something async
+    pub async fn async_drop(&mut self) {
+        self.write()
+            .await
+            .expect("failed to write final buffer content to InfluxDB");
+    }
 }
 
 async fn write(
@@ -126,4 +133,15 @@ async fn write(
         .await?
         .error_for_status()?;
     Ok(())
+}
+
+impl Drop for Influxdb {
+    /// use `Influxdb::async_drop` manually
+    fn drop(&mut self) {
+        assert!(
+            self.linebuffer.is_empty(),
+            "InfluxDB is dropped with {} unsent lines in buffer!",
+            self.linebuffer.len()
+        );
+    }
 }
