@@ -39,14 +39,15 @@ fn e2e() {
 
 /// Assume floats of the payload, otherwise return None
 fn floatify(payload: &str) -> Option<f64> {
-    let payload = payload.trim();
     if let Ok(payload) = payload.parse::<f64>() {
         Some(payload)
     } else {
-        let payload = payload.to_lowercase();
-        match payload.as_ref() {
-            "true" | "on" | "online" => Some(1.0),
-            "false" | "off" | "offline" => Some(0.0),
+        match payload {
+            "true" | "True" | "TRUE" | "on" | "On" | "ON" | "online" | "Online" | "ONLINE" => {
+                Some(1.0)
+            }
+            "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline"
+            | "OFFLINE" => Some(0.0),
             _ => None,
         }
     }

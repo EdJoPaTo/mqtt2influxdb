@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Handle termination signals (Ctrl-C, SIGTERM, …) and send buffer before closing
 
+### Changed
+
+- Payload float detection is way more performant with known (`on`, `true`) and other strings.
+  This looses support for strange formattings like `onLiNe` but still works with formattings like `online`, `Online` and `ONLINE`.
+
 ### Fixes
 
 - Empty MQTT messages are no longer assumed as `0.0`. Clearing retained messages for example are empty messages.
