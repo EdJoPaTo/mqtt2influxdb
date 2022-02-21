@@ -1,6 +1,7 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use reqwest::header;
+use tokio::time::sleep;
 use url::Url;
 
 const USER_AGENT: &str = concat!(
@@ -14,6 +15,13 @@ const USER_AGENT: &str = concat!(
 pub struct Influxdb {
     write_url: Url,
     client: reqwest::Client,
+    next_error_millis: u64,
+
+    last_send: Instant,
+    max_age: Duration,
+
+    linebuffer: Vec<String>,
+    max_amount: usize,
 }
 
 impl Influxdb {
@@ -23,6 +31,8 @@ impl Influxdb {
         database: Option<&str>,
         org: Option<&str>,
         bucket: Option<&str>,
+        max_age: Duration,
+        max_amount: usize,
     ) -> Self {
         let mut headers = header::HeaderMap::new();
         headers.insert(
@@ -61,23 +71,59 @@ impl Influxdb {
             )));
         }
 
-        let influxdb = Self {
-            write_url: url,
-            client,
-        };
-        if let Err(err) = influxdb.write(&[]).await {
+        if let Err(err) = write(&client, url.as_str(), &[]).await {
             panic!("failed InfluxDB test-write: {}", err);
         }
-        influxdb
+
+        Self {
+            write_url: url,
+            client,
+            next_error_millis: 8,
+
+            last_send: Instant::now(),
+            max_age,
+
+            linebuffer: Vec::with_capacity(max_amount),
+            max_amount,
+        }
     }
 
-    pub async fn write(&self, lines: &[String]) -> Result<(), reqwest::Error> {
-        self.client
-            .post(self.write_url.as_str())
-            .body(lines.join("\n"))
-            .send()
-            .await?
-            .error_for_status()?;
+    pub async fn push(&mut self, line: String) {
+        self.linebuffer.push(line);
+    }
+
+    async fn write(&mut self) -> Result<(), reqwest::Error> {
+        write(&self.client, self.write_url.as_str(), &self.linebuffer).await?;
+        self.last_send = Instant::now();
+        println!("sent {} lines", self.linebuffer.len());
+        self.linebuffer.clear();
         Ok(())
     }
+
+    pub async fn do_loop(&mut self) {
+        if self.linebuffer.len() >= self.max_amount || self.last_send.elapsed() > self.max_age {
+            if let Err(err) = self.write().await {
+                eprintln!("InfluxDB write failed {}", err);
+                sleep(Duration::from_millis(self.next_error_millis)).await;
+                self.next_error_millis *= 2;
+                self.next_error_millis = self.next_error_millis.min(30_000); // Up to 30 seconds
+            } else {
+                self.next_error_millis = 8;
+            }
+        }
+    }
+}
+
+async fn write(
+    client: &reqwest::Client,
+    url: &str,
+    lines: &[String],
+) -> Result<(), reqwest::Error> {
+    client
+        .post(url)
+        .body(lines.join("\n"))
+        .send()
+        .await?
+        .error_for_status()?;
+    Ok(())
 }

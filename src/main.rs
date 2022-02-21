@@ -3,11 +3,8 @@ use std::time::Duration;
 use tokio::sync::mpsc::error::TryRecvError;
 use tokio::time::sleep;
 
-use crate::linebuffer::LineBuffer;
-
 mod cli;
 mod influxdb;
-mod linebuffer;
 mod message;
 mod mqtt;
 
@@ -32,12 +29,14 @@ async fn main() {
         .collect();
 
     let influx_host = &matches.value_of("influx-host").unwrap();
-    let influxdb = influxdb::Influxdb::new(
+    let mut influxdb = influxdb::Influxdb::new(
         influx_host,
         matches.value_of("influx-token"),
         matches.value_of("influx-database"),
         matches.value_of("influx-org"),
         matches.value_of("influx-bucket"),
+        buffer_age,
+        buffer_amount,
     )
     .await;
     eprintln!("InfluxDB {} connected.", influx_host);
@@ -57,19 +56,18 @@ async fn main() {
     .await;
     eprintln!("MQTT {} connected.", mqtt_broker);
 
-    let mut linebuffer = LineBuffer::new(buffer_age, buffer_amount);
     eprintln!("Startup done. Listening to topics now…");
 
     loop {
         match receiver.try_recv() {
             Ok(message) => {
                 if let Some(line) = message.into_line_protocol() {
-                    linebuffer.push(line);
+                    influxdb.push(line).await;
                 }
             }
             Err(TryRecvError::Empty) => sleep(Duration::from_millis(50)).await,
             Err(TryRecvError::Disconnected) => panic!("MQTT sender is gone"),
         }
-        linebuffer.write(&influxdb).await;
+        influxdb.do_loop().await;
     }
 }
