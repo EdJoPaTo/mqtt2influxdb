@@ -46,7 +46,7 @@ fn floatify(payload: &str) -> Option<f64> {
         let payload = payload.to_lowercase();
         match payload.as_ref() {
             "true" | "on" | "online" => Some(1.0),
-            "false" | "off" | "offline" | "" => Some(0.0),
+            "false" | "off" | "offline" => Some(0.0),
             _ => None,
         }
     }
@@ -81,8 +81,8 @@ fn floatify_on() {
 
 #[test]
 fn floatify_empty() {
-    test_floatify("", 0.0);
-    test_floatify("  ", 0.0);
+    assert!(floatify("").is_none());
+    assert!(floatify("  ").is_none());
 }
 
 #[test]
