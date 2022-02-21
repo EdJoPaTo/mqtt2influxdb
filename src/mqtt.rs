@@ -57,7 +57,7 @@ pub async fn connect(
                     break;
                 }
                 Ok(rumqttc::Event::Incoming(rumqttc::Packet::Publish(p)))
-                    if !p.dup && !p.retain =>
+                    if !p.dup && !p.retain && !p.payload.is_empty() =>
                 {
                     let nanos = SystemTime::now()
                         .duration_since(SystemTime::UNIX_EPOCH)
