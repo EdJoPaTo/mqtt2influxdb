@@ -78,7 +78,7 @@ impl Influxdb {
         Self {
             write_url: url,
             client,
-            next_error_millis: 8,
+            next_error_millis: 91,
 
             last_send: Instant::now(),
             max_age,
@@ -108,7 +108,7 @@ impl Influxdb {
                 self.next_error_millis *= 2;
                 self.next_error_millis = self.next_error_millis.min(30_000); // Up to 30 seconds
             } else {
-                self.next_error_millis = 8;
+                self.next_error_millis = 91;
             }
         }
     }
