@@ -15,7 +15,7 @@ const USER_AGENT: &str = concat!(
 pub struct Influxdb {
     write_url: Url,
     client: reqwest::Client,
-    next_error_millis: u64,
+    error_count: u64,
 
     last_send: Instant,
     max_age: Duration,
@@ -78,7 +78,7 @@ impl Influxdb {
         Self {
             write_url: url,
             client,
-            next_error_millis: 91,
+            error_count: 0,
 
             last_send: Instant::now(),
             max_age,
@@ -103,12 +103,15 @@ impl Influxdb {
     pub async fn do_loop(&mut self) {
         if self.linebuffer.len() >= self.max_amount || self.last_send.elapsed() > self.max_age {
             if let Err(err) = self.write().await {
-                eprintln!("InfluxDB write failed {}", err);
-                sleep(Duration::from_millis(self.next_error_millis)).await;
-                self.next_error_millis *= 2;
-                self.next_error_millis = self.next_error_millis.min(30_000); // Up to 30 seconds
+                self.error_count += 1;
+                eprintln!(
+                    "InfluxDB write failed (error_count: {}): {}",
+                    self.error_count, err
+                );
+                let error_millis = (self.error_count * 91).min(30_000); // Up to 30
+                sleep(Duration::from_millis(error_millis)).await;
             } else {
-                self.next_error_millis = 91;
+                self.error_count = 0;
             }
         }
     }
