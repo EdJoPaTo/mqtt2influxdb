@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Increase minimum error wait. This reduces the load on the database as it seems to have some errors currently anyway.
+- Higher timeout for InfluxDB writes.
 
 ### Fixes
 
