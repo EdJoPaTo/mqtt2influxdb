@@ -40,7 +40,11 @@ fn e2e() {
 /// Assume floats of the payload, otherwise return None
 fn floatify(payload: &str) -> Option<f64> {
     if let Ok(payload) = payload.parse::<f64>() {
-        Some(payload)
+        if payload.is_finite() {
+            Some(payload)
+        } else {
+            None
+        }
     } else {
         match payload {
             "true" | "True" | "TRUE" | "on" | "On" | "ON" | "online" | "Online" | "ONLINE" => {
@@ -89,6 +93,14 @@ fn floatify_empty() {
 #[test]
 fn floatify_string() {
     assert!(floatify("whatever").is_none());
+}
+
+#[test]
+fn floatify_non_finite() {
+    assert!(floatify("nan").is_none());
+    assert!(floatify("NaN").is_none());
+    assert!(floatify("inf").is_none());
+    assert!(floatify("infinity").is_none());
 }
 
 /// Influx Line Protocol Escape
