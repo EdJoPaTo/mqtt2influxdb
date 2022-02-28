@@ -92,7 +92,7 @@ impl Influxdb {
         self.linebuffer.push(line);
     }
 
-    async fn write(&mut self) -> Result<(), reqwest::Error> {
+    async fn write(&mut self) -> anyhow::Result<()> {
         write(&self.client, self.write_url.as_str(), &self.linebuffer).await?;
         self.last_send = Instant::now();
         println!("sent {} lines", self.linebuffer.len());
@@ -121,18 +121,18 @@ impl Influxdb {
     }
 }
 
-async fn write(
-    client: &reqwest::Client,
-    url: &str,
-    lines: &[String],
-) -> Result<(), reqwest::Error> {
-    client
-        .post(url)
-        .body(lines.join("\n"))
-        .send()
-        .await?
-        .error_for_status()?;
-    Ok(())
+async fn write(client: &reqwest::Client, url: &str, lines: &[String]) -> anyhow::Result<()> {
+    let result = client.post(url).body(lines.join("\n")).send().await?;
+    let status = result.status();
+    if status.is_client_error() || status.is_server_error() {
+        Err(if let Ok(text) = result.text().await {
+            anyhow::anyhow!("InfluxDB write error: {:?}", text)
+        } else {
+            anyhow::anyhow!("Unknown InfluxDB write error")
+        })
+    } else {
+        Ok(())
+    }
 }
 
 impl Drop for Influxdb {

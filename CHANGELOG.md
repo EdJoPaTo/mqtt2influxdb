@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Show InfluxDB error message (from request body) on error
+
 ### Changed
 
 - Increase minimum error wait. This reduces the load on the database as it seems to have some errors currently anyway.
