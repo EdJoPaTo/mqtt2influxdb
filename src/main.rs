@@ -74,7 +74,7 @@ async fn main() {
         match receiver.try_recv() {
             Ok(message) => {
                 if let Some(line) = message.into_line_protocol() {
-                    influxdb.push(line).await;
+                    influxdb.push(line);
                 }
             }
             Err(TryRecvError::Empty) => sleep(Duration::from_millis(50)).await,
@@ -89,7 +89,7 @@ async fn main() {
 
     while let Some(message) = receiver.recv().await {
         if let Some(line) = message.into_line_protocol() {
-            influxdb.push(line).await;
+            influxdb.push(line);
         }
     }
     influxdb.async_drop().await;

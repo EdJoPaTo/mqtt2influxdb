@@ -88,7 +88,7 @@ impl Influxdb {
         }
     }
 
-    pub async fn push(&mut self, line: String) {
+    pub fn push(&mut self, line: String) {
         self.linebuffer.push(line);
     }
 
