@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Only attempt to publish finite floats. NaN for example errors anyway.
+- Systemd: restart on-failure
 
 ## [0.2.0] - 2022-02-22
 

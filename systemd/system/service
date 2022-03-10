@@ -2,10 +2,13 @@
 Description=Run mqtt2influxdb
 Wants=network-online.target
 After=network-online.target
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 DynamicUser=true
+Restart=on-failure
+RestartSec=20
 ExecStart=/usr/bin/mqtt2influxdb
 
 [Install]
