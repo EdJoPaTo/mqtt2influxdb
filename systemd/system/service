@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 Type=simple
 DynamicUser=true
-ExecStart=/usr/local/bin/mqtt2influxdb
+ExecStart=/usr/bin/mqtt2influxdb
 
 [Install]
 WantedBy=multi-user.target
