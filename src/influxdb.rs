@@ -26,7 +26,7 @@ pub struct Influxdb {
 
 impl Influxdb {
     pub async fn new(
-        host: &str,
+        host: &Url,
         api_token: Option<&str>,
         database: Option<&str>,
         org: Option<&str>,
@@ -58,7 +58,7 @@ impl Influxdb {
             .build()
             .unwrap();
 
-        let mut url = Url::parse(host).unwrap();
+        let mut url = host.clone();
         if let Some(database) = database {
             url.set_path("/write");
             url.set_query(Some(&format!("db={}", database)));

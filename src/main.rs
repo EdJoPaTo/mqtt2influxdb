@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use tokio::sync::mpsc::error::TryRecvError;
 use tokio::time::sleep;
+use url::Url;
 
 mod cli;
 mod exit_handler;
@@ -13,46 +14,48 @@ mod mqtt;
 async fn main() {
     let matches = cli::build().get_matches();
 
-    let buffer_amount = matches
-        .value_of("buffer-amount")
-        .and_then(|s| s.parse::<usize>().ok())
-        .unwrap();
+    let buffer_amount = *matches.get_one::<usize>("buffer-amount").unwrap();
     let buffer_age = matches
-        .value_of("buffer-seconds")
-        .and_then(|s| s.parse::<f32>().ok())
+        .get_one::<f32>("buffer-seconds")
+        .copied()
         .map(Duration::from_secs_f32)
         .unwrap();
 
     let topics = matches
-        .values_of("topics")
+        .get_many::<String>("topics")
         .unwrap()
         .map(std::string::ToString::to_string)
         .collect();
 
-    let influx_host = &matches.value_of("influx-host").unwrap();
+    let influx_host = matches.get_one::<Url>("influx-host").unwrap();
     let mut influxdb = influxdb::Influxdb::new(
         influx_host,
-        matches.value_of("influx-token"),
-        matches.value_of("influx-database"),
-        matches.value_of("influx-org"),
-        matches.value_of("influx-bucket"),
+        matches
+            .get_one::<String>("influx-token")
+            .map(String::as_str),
+        matches
+            .get_one::<String>("influx-database")
+            .map(String::as_str),
+        matches.get_one::<String>("influx-org").map(String::as_str),
+        matches
+            .get_one::<String>("influx-bucket")
+            .map(String::as_str),
         buffer_age,
         buffer_amount,
     )
     .await;
     eprintln!("InfluxDB {} connected.", influx_host);
 
-    let mqtt_broker = &matches.value_of("mqtt-broker").unwrap();
+    let mqtt_broker = matches.get_one::<String>("mqtt-broker").unwrap();
     let (client, mut receiver) = mqtt::connect(
         mqtt_broker,
+        *matches.get_one("mqtt-port").unwrap(),
+        matches.get_one::<String>("mqtt-user").map(String::as_str),
         matches
-            .value_of("mqtt-port")
-            .and_then(|s| s.parse().ok())
-            .unwrap(),
-        matches.value_of("mqtt-user"),
-        matches.value_of("mqtt-password"),
+            .get_one::<String>("mqtt-password")
+            .map(String::as_str),
         topics,
-        matches.is_present("verbose"),
+        matches.contains_id("verbose"),
     )
     .await;
     eprintln!("MQTT {} connected.", mqtt_broker);

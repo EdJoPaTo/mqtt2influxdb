@@ -1,4 +1,4 @@
-use clap::{command, Arg, ArgGroup, Command, ValueHint};
+use clap::{command, value_parser, Arg, ArgGroup, Command, ValueHint};
 
 #[allow(clippy::too_many_lines)]
 #[must_use]
@@ -10,7 +10,7 @@ pub fn build() -> Command<'static> {
                 .env("INFLUX_HOST")
                 .value_hint(ValueHint::Url)
                 .value_name("INFLUX_HOST")
-                .validator(url::Url::parse)
+                .value_parser(value_parser!(url::Url))
                 .takes_value(true)
                 .default_value("http://localhost:8086/")
                 .help("HTTP address of InfluxDB"),
@@ -75,7 +75,7 @@ pub fn build() -> Command<'static> {
                 .env("MQTT_PORT")
                 .value_hint(ValueHint::Other)
                 .value_name("INT")
-                .validator(|s| s.parse::<u16>())
+                .value_parser(value_parser!(u16))
                 .takes_value(true)
                 .default_value("1883")
                 .help("Port on which the MQTT Broker is running"),
@@ -128,7 +128,7 @@ pub fn build() -> Command<'static> {
                 .long("buffer-amount")
                 .value_hint(ValueHint::Other)
                 .value_name("INT")
-                .validator(|s| s.parse::<usize>())
+                .value_parser(value_parser!(usize))
                 .takes_value(true)
                 .default_value("1000")
                 .help("Send the buffer when the amount of messages is reached (or the time)"),
@@ -138,7 +138,7 @@ pub fn build() -> Command<'static> {
                 .long("buffer-seconds")
                 .value_hint(ValueHint::Other)
                 .value_name("SECONDS")
-                .validator(|s| s.parse::<f32>())
+                .value_parser(value_parser!(f32))
                 .takes_value(true)
                 .default_value("28.2")
                 .help("Send the buffer when the timeout in seconds has reached (or the amount)"),
