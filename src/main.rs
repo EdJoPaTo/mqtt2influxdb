@@ -10,7 +10,7 @@ mod influxdb;
 mod message;
 mod mqtt;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     let matches = cli::build().get_matches();
 
