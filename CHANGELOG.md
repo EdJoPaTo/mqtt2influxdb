@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2022-08-18
+
 ### Changed
 
 - Switch to `current_thread` async worker (tokio) to reduce dependencies and less thread switches
