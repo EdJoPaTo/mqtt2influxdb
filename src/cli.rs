@@ -1,15 +1,15 @@
 use clap::{ArgGroup, Parser, ValueHint};
 
 #[derive(Debug, Parser)]
-#[clap(about, author, version)]
-#[clap(group(
+#[command(about, version)]
+#[command(group(
     ArgGroup::new("influxtarget")
-        .args(&["influx-org", "influx-database"])
+        .args(&["influx_org", "influx_database"])
         .required(true)
 ))]
 pub struct Cli {
     /// HTTP address of InfluxDB
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Url,
         default_value = "http://localhost:8086/"
@@ -17,7 +17,7 @@ pub struct Cli {
     pub influx_host: url::Url,
 
     /// InfluxDB api token with write access
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "TOKEN",
@@ -26,34 +26,34 @@ pub struct Cli {
     pub influx_token: Option<String>,
 
     /// InfluxDB 1.x database to put the value in
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
-        conflicts_with_all = &["influx-org", "influx-bucket"],
+        conflicts_with_all = &["influx_org", "influx_bucket"],
     )]
     pub influx_database: Option<String>,
 
     /// InfluxDB v2 organization
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
-        conflicts_with = "influx-database",
+        conflicts_with = "influx_database",
     )]
     pub influx_org: Option<String>,
 
     /// InfluxDB v2 organization
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
-        conflicts_with = "influx-database",
+        conflicts_with = "influx_database",
     )]
     pub influx_bucket: Option<String>,
 
     /// Host on which the MQTT Broker is running
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Hostname,
         value_name = "HOST",
@@ -62,7 +62,7 @@ pub struct Cli {
     pub mqtt_broker: String,
 
     /// Port on which the MQTT Broker is running
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "INT",
@@ -73,28 +73,28 @@ pub struct Cli {
     /// Username to access the MQTT broker.
     ///
     /// Anonymous access when not supplied.
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Username,
         value_name = "STRING",
-        requires = "mqtt-password",
+        requires = "mqtt_password",
     )]
     pub mqtt_user: Option<String>,
 
     /// Password to access the MQTT broker.
     ///
     /// Passing the password via command line is insecure as the password can be read from the history!
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
         hide_env_values = true,
-        requires = "mqtt-user",
+        requires = "mqtt_user",
     )]
     pub mqtt_password: Option<String>,
 
     /// MQTT topics to subscribe
-    #[clap(
+    #[arg(
         env,
         value_hint = ValueHint::Other,
         value_name = "TOPIC",
@@ -103,11 +103,11 @@ pub struct Cli {
     pub mqtt_topics: Vec<String>,
 
     /// Show more details
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub verbose: bool,
 
     /// Send the buffer when the amount of messages is reached (or the time)
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "INT",
@@ -116,7 +116,7 @@ pub struct Cli {
     pub buffer_amount: usize,
 
     /// Send the buffer when the timeout in seconds has reached (or the amount)
-    #[clap(
+    #[arg(
         long, env,
         value_hint = ValueHint::Other,
         value_name = "SECONDS",
