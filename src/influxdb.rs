@@ -45,7 +45,7 @@ impl Influxdb {
         );
 
         if let Some(token) = api_token {
-            let mut auth_value = header::HeaderValue::from_str(&format!("Token {}", token))
+            let mut auth_value = header::HeaderValue::from_str(&format!("Token {token}"))
                 .expect("InfluxDB API_TOKEN is no valid HTTP Header");
             auth_value.set_sensitive(true);
             headers.insert(header::AUTHORIZATION, auth_value);
@@ -61,7 +61,7 @@ impl Influxdb {
         let mut url = host.clone();
         if let Some(database) = database {
             url.set_path("/write");
-            url.set_query(Some(&format!("db={}", database)));
+            url.set_query(Some(&format!("db={database}")));
         } else {
             url.set_path("/api/v2/write");
             url.set_query(Some(&format!(
@@ -72,7 +72,7 @@ impl Influxdb {
         }
 
         if let Err(err) = write(&client, url.as_str(), &[]).await {
-            panic!("failed InfluxDB test-write: {}", err);
+            panic!("failed InfluxDB test-write: {err}");
         }
 
         Self {
@@ -105,8 +105,8 @@ impl Influxdb {
             if let Err(err) = self.write().await {
                 self.error_count += 1;
                 eprintln!(
-                    "InfluxDB write failed (error_count: {}): {}",
-                    self.error_count, err
+                    "InfluxDB write failed (error_count: {}): {err}",
+                    self.error_count
                 );
                 let error_millis = (self.error_count * 91).min(30_000); // Up to 30
                 sleep(Duration::from_millis(error_millis)).await;
@@ -128,11 +128,10 @@ async fn write(client: &reqwest::Client, url: &str, lines: &[String]) -> anyhow:
     let result = client.post(url).body(lines.join("\n")).send().await?;
     let status = result.status();
     if status.is_client_error() || status.is_server_error() {
-        Err(if let Ok(text) = result.text().await {
-            anyhow::anyhow!("InfluxDB write error: {:?}", text)
-        } else {
-            anyhow::anyhow!("Unknown InfluxDB write error")
-        })
+        Err(result.text().await.map_or_else(
+            |_| anyhow::anyhow!("Unknown InfluxDB write error"),
+            |text| anyhow::anyhow!("InfluxDB write error: {text:?}"),
+        ))
     } else {
         Ok(())
     }

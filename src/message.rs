@@ -39,6 +39,7 @@ fn e2e() {
 
 /// Assume floats of the payload, otherwise return None
 fn floatify(payload: &str) -> Option<f64> {
+    #[allow(clippy::option_if_let_else)]
     if let Ok(payload) = payload.parse::<f64>() {
         if payload.is_finite() {
             Some(payload)
@@ -112,12 +113,12 @@ fn topic_tags(topic: &str) -> String {
     let topic = line_protocol_escape(topic);
     let splitted = topic.split('/').collect::<Vec<_>>();
     let mut tags = Vec::with_capacity(1 + 3 + splitted.len());
-    tags.push(format!("topic={}", topic));
+    tags.push(format!("topic={topic}"));
     for (i, part) in splitted.iter().enumerate() {
-        tags.push(format!("topic{}={}", i + 1, part));
+        tags.push(format!("topic{}={part}", i + 1));
     }
     for (i, part) in splitted.iter().rev().take(3).enumerate() {
-        tags.push(format!("topic-{}={}", i + 1, part));
+        tags.push(format!("topic-{}={part}", i + 1));
     }
     tags.join(",")
 }

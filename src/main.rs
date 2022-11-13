@@ -36,7 +36,7 @@ async fn main() {
         matches.verbose,
     )
     .await;
-    eprintln!("MQTT {} connected.", mqtt_broker);
+    eprintln!("MQTT {mqtt_broker} connected.");
 
     let quit = exit_handler::ExitHandler::new();
 
