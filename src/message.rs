@@ -39,22 +39,12 @@ fn e2e() {
 
 /// Assume floats of the payload, otherwise return None
 fn floatify(payload: &str) -> Option<f64> {
-    #[allow(clippy::option_if_let_else)]
-    if let Ok(payload) = payload.parse::<f64>() {
-        if payload.is_finite() {
-            Some(payload)
-        } else {
-            None
+    match payload {
+        "true" | "True" | "TRUE" | "on" | "On" | "ON" | "online" | "Online" | "ONLINE" => Some(1.0),
+        "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline" | "OFFLINE" => {
+            Some(0.0)
         }
-    } else {
-        match payload {
-            "true" | "True" | "TRUE" | "on" | "On" | "ON" | "online" | "Online" | "ONLINE" => {
-                Some(1.0)
-            }
-            "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline"
-            | "OFFLINE" => Some(0.0),
-            _ => None,
-        }
+        s => s.parse::<f64>().ok().filter(|f| f.is_finite()),
     }
 }
 
