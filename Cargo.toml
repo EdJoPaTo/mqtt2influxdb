@@ -38,6 +38,7 @@ maintainer-scripts = "systemd/system/"
 systemd-units = {}
 assets = [
     ["target/release/mqtt2influxdb", "/usr/bin/mqtt2influxdb", "755"],
+    ["CHANGELOG.md", "/usr/share/doc/mqtt2influxdb/CHANGELOG.md", "644"],
     ["LICENSE", "/usr/share/licenses/mqtt2influxdb/LICENSE", "644"],
     ["README.md", "/usr/share/doc/mqtt2influxdb/README.md", "644"],
 
@@ -50,6 +51,7 @@ assets = [
 [package.metadata.generate-rpm]
 assets = [
     { source = "target/release/mqtt2influxdb", dest = "/usr/bin/mqtt2influxdb", mode = "755" },
+    { source = "CHANGELOG.md", dest = "/usr/share/doc/mqtt2influxdb/CHANGELOG.md", mode = "644", doc = true },
     { source = "LICENSE", dest = "/usr/share/licenses/mqtt2influxdb/LICENSE", mode = "644", doc = true },
     { source = "README.md", dest = "/usr/share/doc/mqtt2influxdb/README.md", mode = "644", doc = true },
 
