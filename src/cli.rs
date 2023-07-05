@@ -66,6 +66,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "INT",
+        value_parser = clap::value_parser!(u16).range(1..),
         default_value = "1883",
     )]
     pub mqtt_port: u16,
