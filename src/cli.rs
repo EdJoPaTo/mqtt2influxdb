@@ -40,6 +40,7 @@ pub struct Cli {
         value_hint = ValueHint::Other,
         value_name = "STRING",
         conflicts_with = "influx_database",
+        requires = "influx_bucket",
     )]
     pub influx_org: Option<String>,
 
@@ -49,6 +50,7 @@ pub struct Cli {
         value_hint = ValueHint::Other,
         value_name = "STRING",
         conflicts_with = "influx_database",
+        requires = "influx_org",
     )]
     pub influx_bucket: Option<String>,
 

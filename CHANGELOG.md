@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update dependencies
 
+### Fixes
+
+- Ensure influx org and bucket are both provided when using the Influx API v2
+
 ## [0.3.2] - 2023-02-08
 
 ### Changed
