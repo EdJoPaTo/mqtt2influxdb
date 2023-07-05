@@ -24,7 +24,7 @@ clap = { version = "4", features = ["deprecated", "derive", "env", "wrap_help"] 
 ctrlc = { version = "3", features = ["termination"] }
 rand = "0.8"
 reqwest = { version = "0.11", features = ["rustls-tls"], default-features = false }
-rumqttc = "0.20"
+rumqttc = "0.22"
 tokio = { version = "1", features = ["macros"] }
 url = "2"
 
