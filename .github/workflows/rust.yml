@@ -14,7 +14,7 @@ jobs:
           rm ~/.cargo/bin/{rustfmt,cargo-fmt}
           rustup toolchain install stable --profile minimal --component rustfmt
           rustup default stable
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: cargo fmt --check --verbose
 
   test:
@@ -51,7 +51,7 @@ jobs:
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --component clippy
           rustup default ${{ matrix.toolchain }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Fetch dependencies
         uses: actions-rs/cargo@v1
@@ -147,7 +147,7 @@ jobs:
             ~/.cargo/bin/
             ~/.cargo/.crates*
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
