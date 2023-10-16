@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - use `--victoria-metrics` when there is no database, organisation or bucket required.
+- `topicSegments` shows the amount of segments in the topic.
 
 ### Changed
 

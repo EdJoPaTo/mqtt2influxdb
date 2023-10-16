@@ -33,7 +33,7 @@ fn e2e() {
     let message = Message::new(1337, "foo/bar".into(), b"42".to_vec());
     assert_eq!(
         message.into_line_protocol().unwrap(),
-        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo value=42 1337",
+        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2 value=42 1337",
     );
 }
 
@@ -102,7 +102,7 @@ fn line_protocol_escape(s: &str) -> String {
 fn topic_tags(topic: &str) -> String {
     let topic = line_protocol_escape(topic);
     let splitted = topic.split('/').collect::<Vec<_>>();
-    let mut tags = Vec::with_capacity(1 + 3 + splitted.len());
+    let mut tags = Vec::with_capacity(2 + 3 + splitted.len());
     tags.push(format!("topic={topic}"));
     for (i, part) in splitted.iter().enumerate() {
         tags.push(format!("topic{}={part}", i + 1));
@@ -110,6 +110,7 @@ fn topic_tags(topic: &str) -> String {
     for (i, part) in splitted.iter().rev().take(3).enumerate() {
         tags.push(format!("topicE{}={part}", i + 1));
     }
+    tags.push(format!("topicSegments={}", splitted.len()));
     tags.join(",")
 }
 
@@ -117,7 +118,7 @@ fn topic_tags(topic: &str) -> String {
 fn topic_tags_short_works() {
     assert_eq!(
         topic_tags("foo/bar"),
-        "topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo",
+        "topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2",
     );
 }
 
@@ -125,6 +126,6 @@ fn topic_tags_short_works() {
 fn topic_tags_long_works() {
     assert_eq!(
         topic_tags("base/foo/bar/test"),
-        "topic=base/foo/bar/test,topic1=base,topic2=foo,topic3=bar,topic4=test,topicE1=test,topicE2=bar,topicE3=foo",
+        "topic=base/foo/bar/test,topic1=base,topic2=foo,topic3=bar,topic4=test,topicE1=test,topicE2=bar,topicE3=foo,topicSegments=4",
     );
 }
