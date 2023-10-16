@@ -4,7 +4,7 @@ use clap::{ArgGroup, Parser, ValueHint};
 #[command(about, version)]
 #[command(group(
     ArgGroup::new("influxtarget")
-        .args(&["influx_org", "influx_database"])
+        .args(&["influx_org", "influx_database", "victoria_metrics"])
         .required(true)
 ))]
 pub struct Cli {
@@ -53,6 +53,13 @@ pub struct Cli {
         requires = "influx_org",
     )]
     pub influx_bucket: Option<String>,
+
+    /// VictoriaMetrics doesnt need database, organisation or bucket
+    #[arg(
+        long, env,
+        conflicts_with_all = &["influx_database", "influx_org", "influx_bucket"],
+    )]
+    pub victoria_metrics: bool,
 
     /// Host on which the MQTT Broker is running
     #[arg(

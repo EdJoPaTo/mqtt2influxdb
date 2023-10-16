@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- use `--victoria-metrics` when there is no database, organisation or bucket required.
+
 ### Changed
 
 - use `topicE1` instead of `topic-1` (same with `topic-2` and `topic-3`).

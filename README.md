@@ -22,6 +22,7 @@ Run `mqtt2influxdb --help`.
 - [Write with v2](https://docs.influxdata.com/influxdb/v2.1/write-data/developer-tools/api/)
 - [Write with 1.x](https://docs.influxdata.com/influxdb/v2.1/reference/api/influxdb-1x/write/)
 - [Line Protocol](https://docs.influxdata.com/influxdb/v2.1/reference/syntax/line-protocol/)
+- [Migrate from InfluxDB to VictoriaMetrics](https://docs.victoriametrics.com/guides/migrate-from-influx.html)
 
 ## Alternatives
 

@@ -59,16 +59,14 @@ impl Influxdb {
             .unwrap();
 
         let mut url = host.clone();
-        if let Some(database) = database {
+        if let (Some(org), Some(bucket)) = (org, bucket) {
+            url.set_path("/api/v2/write");
+            url.set_query(Some(&format!("org={org}&bucket={bucket}")));
+        } else if let Some(database) = database {
             url.set_path("/write");
             url.set_query(Some(&format!("db={database}")));
         } else {
-            url.set_path("/api/v2/write");
-            url.set_query(Some(&format!(
-                "org={}&bucket={}",
-                org.unwrap(),
-                bucket.unwrap()
-            )));
+            url.set_path("/write");
         }
 
         if let Err(err) = write(&client, url.as_str(), &[]).await {
