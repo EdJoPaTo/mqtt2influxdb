@@ -12,9 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use `--victoria-metrics` when there is no database, organisation or bucket required.
 - `topicSegments` shows the amount of segments in the topic.
 
-### Changed
+### Breaking Changes
 
-- use `topicE1` instead of `topic-1` (same with `topic-2` and `topic-3`).
+- rename `topic-1` to `topicE1` (same with `topic-2` and `topic-3`).
 
 ## [0.3.3] - 2023-07-05
 
