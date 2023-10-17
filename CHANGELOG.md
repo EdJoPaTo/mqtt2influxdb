@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Changes
 
 - rename `topic-1` to `topicE1` (same with `topic-2` and `topic-3`).
+  The old name with the - (minus) is still available but deprecated and will be removed in a future release.
 
 ## [0.3.3] - 2023-07-05
 
