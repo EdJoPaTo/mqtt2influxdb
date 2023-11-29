@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 #[derive(Debug)]
 pub struct Message {
     nanos: u128,
@@ -102,17 +104,16 @@ fn line_protocol_escape(s: &str) -> String {
 fn topic_tags(topic: &str) -> String {
     let topic = line_protocol_escape(topic);
     let splitted = topic.split('/').collect::<Vec<_>>();
-    let mut tags = Vec::with_capacity(2 + 3 + splitted.len());
-    tags.push(format!("topic={topic}"));
+    let mut tags = format!("topic={topic},");
     for (i, part) in splitted.iter().enumerate() {
-        tags.push(format!("topic{}={part}", i + 1));
+        _ = write!(&mut tags, "topic{}={part},", i + 1);
     }
     for (i, part) in splitted.iter().rev().take(3).enumerate() {
-        tags.push(format!("topicE{}={part}", i + 1));
-        tags.push(format!("topic-{}={part}", i + 1));
+        _ = write!(&mut tags, "topicE{}={part},", i + 1);
+        _ = write!(&mut tags, "topic-{}={part},", i + 1);
     }
-    tags.push(format!("topicSegments={}", splitted.len()));
-    tags.join(",")
+    _ = write!(&mut tags, "topicSegments={}", splitted.len());
+    tags
 }
 
 #[test]
