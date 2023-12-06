@@ -64,7 +64,7 @@ pub async fn connect(
                         .duration_since(SystemTime::UNIX_EPOCH)
                         .unwrap()
                         .as_nanos();
-                    let message = Message::new(nanos, p.topic, p.payload.to_vec());
+                    let message = Message::new(nanos, p.topic, p.payload.into());
                     sender.send(message).await.expect("receiver died");
                 }
                 Ok(_) => {}
