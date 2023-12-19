@@ -9,14 +9,14 @@ use crate::message::Message;
 
 pub async fn connect(
     broker: &str,
-    port: u16,
+    port: std::num::NonZeroU16,
     username: Option<&str>,
     password: Option<&str>,
     topics: Vec<String>,
     verbose: bool,
 ) -> (AsyncClient, Receiver<Message>) {
     let client_id = format!("mqtt2influxdb-{:x}", rand::random::<u32>());
-    let mut mqttoptions = MqttOptions::new(client_id, broker, port);
+    let mut mqttoptions = MqttOptions::new(client_id, broker, port.get());
 
     if let Some(password) = password {
         let username = username.unwrap();
