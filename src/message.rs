@@ -46,7 +46,12 @@ fn floatify(payload: &str) -> Option<f64> {
         "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline" | "OFFLINE" => {
             Some(0.0)
         }
-        s => s.parse::<f64>().ok().filter(|f| f.is_finite()),
+        s => s
+            .split(char::is_whitespace)
+            .find(|o| !o.is_empty())? // lazy trim
+            .parse::<f64>()
+            .ok()
+            .filter(|f| f.is_finite()),
     }
 }
 
@@ -75,6 +80,12 @@ fn floatify_bool() {
 fn floatify_on() {
     test_floatify("on", 1.0);
     test_floatify("off", 0.0);
+}
+
+#[test]
+fn floatify_units() {
+    test_floatify("12.3 °C", 12.3);
+    test_floatify(" 12.3 °C", 12.3);
 }
 
 #[test]

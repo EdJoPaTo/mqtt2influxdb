@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- find values in payloads with units like `12.3 °C` (ignore everything after the whitespace)
+
 ### Changed
 
 - reduce heap allocations on InfluxDB line creation.
