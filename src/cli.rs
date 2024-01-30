@@ -12,6 +12,7 @@ pub struct Cli {
     #[arg(
         long, env,
         value_hint = ValueHint::Url,
+        help_heading = "Database",
         default_value = "http://localhost:8086/"
     )]
     pub influx_host: url::Url,
@@ -21,6 +22,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "TOKEN",
+        help_heading = "Database",
         hide_env_values = true,
     )]
     pub influx_token: Option<String>,
@@ -30,6 +32,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
+        help_heading = "Database",
         conflicts_with_all = &["influx_org", "influx_bucket"],
     )]
     pub influx_database: Option<String>,
@@ -39,6 +42,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
+        help_heading = "Database",
         conflicts_with = "influx_database",
         requires = "influx_bucket",
     )]
@@ -49,6 +53,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
+        help_heading = "Database",
         conflicts_with = "influx_database",
         requires = "influx_org",
     )]
@@ -57,6 +62,7 @@ pub struct Cli {
     /// VictoriaMetrics doesnt need database, organisation or bucket
     #[arg(
         long, env,
+        help_heading = "Database",
         conflicts_with_all = &["influx_database", "influx_org", "influx_bucket"],
     )]
     pub victoria_metrics: bool,
@@ -66,6 +72,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Hostname,
         value_name = "HOST",
+        help_heading = "MQTT",
         default_value = "localhost",
     )]
     pub mqtt_broker: String,
@@ -75,6 +82,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "INT",
+        help_heading = "MQTT",
         default_value = "1883",
     )]
     pub mqtt_port: std::num::NonZeroU16,
@@ -86,6 +94,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Username,
         value_name = "STRING",
+        help_heading = "MQTT",
         requires = "mqtt_password",
     )]
     pub mqtt_user: Option<String>,
@@ -97,6 +106,7 @@ pub struct Cli {
         long, env,
         value_hint = ValueHint::Other,
         value_name = "STRING",
+        help_heading = "MQTT",
         hide_env_values = true,
         requires = "mqtt_user",
     )]
@@ -107,6 +117,7 @@ pub struct Cli {
         env,
         value_hint = ValueHint::Other,
         value_name = "TOPIC",
+        help_heading = "MQTT",
         default_value = "#",
     )]
     pub mqtt_topics: Vec<String>,
