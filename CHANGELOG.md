@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2024-02-16
+
 ### Added
 
 - find values in payloads with units like `12.3 °C` (ignore everything after the whitespace)
