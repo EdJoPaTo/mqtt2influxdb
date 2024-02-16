@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - reduce heap allocations on InfluxDB line creation.
 - reduce heap allocations on MQTT message parsing.
 - group CLI options into headings
+- systemd: use Service Type=exec
 
 ## [0.4.0] - 2023-10-17
 
