@@ -1,5 +1,6 @@
 use clap::{ArgGroup, Parser, ValueHint};
 
+#[allow(clippy::doc_markdown)]
 #[derive(Debug, Parser)]
 #[command(about, version)]
 #[command(group(
