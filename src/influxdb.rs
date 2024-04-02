@@ -114,7 +114,7 @@ impl Influxdb {
         }
     }
 
-    /// This is a workaround as impl Drop for Influxdb cant do something async
+    /// This is a workaround as `impl Drop for Influxdb` can't do something async
     pub async fn async_drop(&mut self) {
         self.write()
             .await

@@ -114,16 +114,16 @@ fn line_protocol_escape(str: &str) -> String {
 
 fn topic_tags(topic: &str) -> String {
     let topic = line_protocol_escape(topic);
-    let splitted = topic.split('/').collect::<Vec<_>>();
+    let parts = topic.split('/').collect::<Vec<_>>();
     let mut tags = format!("topic={topic},");
-    for (i, part) in splitted.iter().enumerate() {
+    for (i, part) in parts.iter().enumerate() {
         _ = write!(&mut tags, "topic{}={part},", i + 1);
     }
-    for (i, part) in splitted.iter().rev().take(3).enumerate() {
+    for (i, part) in parts.iter().rev().take(3).enumerate() {
         _ = write!(&mut tags, "topicE{}={part},", i + 1);
         _ = write!(&mut tags, "topic-{}={part},", i + 1);
     }
-    _ = write!(&mut tags, "topicSegments={}", splitted.len());
+    _ = write!(&mut tags, "topicSegments={}", parts.len());
     tags
 }
 

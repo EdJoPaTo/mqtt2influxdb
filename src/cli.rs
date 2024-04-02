@@ -18,7 +18,7 @@ pub struct Cli {
     )]
     pub influx_host: url::Url,
 
-    /// InfluxDB api token with write access
+    /// InfluxDB API token with write access
     #[arg(
         long, env,
         value_hint = ValueHint::Other,
@@ -60,7 +60,7 @@ pub struct Cli {
     )]
     pub influx_bucket: Option<String>,
 
-    /// VictoriaMetrics doesnt need database, organisation or bucket
+    /// VictoriaMetrics doesn't need database, organization or bucket
     #[arg(
         long, env,
         help_heading = "Database",
