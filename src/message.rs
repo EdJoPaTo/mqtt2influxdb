@@ -20,7 +20,7 @@ impl Message {
     pub fn into_line_protocol(self) -> Option<String> {
         let value = String::from_utf8(self.payload)
             .ok()
-            .and_then(|s| floatify(&s))?;
+            .and_then(|payload| floatify(&payload))?;
         Some(format!(
             "measurement,{} value={} {}",
             topic_tags(&self.topic),
@@ -46,12 +46,12 @@ fn floatify(payload: &str) -> Option<f64> {
         "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline" | "OFFLINE" => {
             Some(0.0)
         }
-        s => s
+        payload => payload
             .split(char::is_whitespace)
-            .find(|o| !o.is_empty())? // lazy trim
+            .find(|part| !part.is_empty())? // lazy trim
             .parse::<f64>()
             .ok()
-            .filter(|f| f.is_finite()),
+            .filter(|float| float.is_finite()),
     }
 }
 
@@ -108,8 +108,8 @@ fn floatify_non_finite() {
 }
 
 /// Influx Line Protocol Escape
-fn line_protocol_escape(s: &str) -> String {
-    s.replace(' ', "\\ ").replace(',', "\\,")
+fn line_protocol_escape(str: &str) -> String {
+    str.replace(' ', "\\ ").replace(',', "\\,")
 }
 
 fn topic_tags(topic: &str) -> String {

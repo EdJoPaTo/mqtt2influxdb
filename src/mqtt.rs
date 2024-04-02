@@ -1,6 +1,6 @@
 use std::time::{Duration, SystemTime};
 
-use rumqttc::{AsyncClient, MqttOptions, QoS};
+use rumqttc::{AsyncClient, Event, MqttOptions, Outgoing, Packet, QoS};
 use tokio::sync::mpsc::{channel, Receiver};
 use tokio::task;
 use tokio::time::sleep;
@@ -27,7 +27,7 @@ pub async fn connect(
 
     loop {
         let event = eventloop.poll().await.expect("MQTT connection error");
-        if let rumqttc::Event::Incoming(rumqttc::Packet::ConnAck(_)) = event {
+        if let Event::Incoming(Packet::ConnAck(_)) = event {
             subscribe(&client, topics.clone())
                 .await
                 .expect("failed to subscribe to MQTT topic");
@@ -45,26 +45,26 @@ pub async fn connect(
                 println!("MQTT Event {event:?}");
             }
             match event {
-                Ok(rumqttc::Event::Incoming(rumqttc::Packet::ConnAck(p))) => {
-                    println!("MQTT connected {p:?}");
-                    if !p.session_present {
+                Ok(Event::Incoming(Packet::ConnAck(packet))) => {
+                    println!("MQTT connected {packet:?}");
+                    if !packet.session_present {
                         subscribe(&client, topics.clone())
                             .await
                             .expect("failed to subscribe after reconnect");
                     }
                 }
-                Ok(rumqttc::Event::Outgoing(rumqttc::Outgoing::Disconnect)) => {
+                Ok(Event::Outgoing(Outgoing::Disconnect)) => {
                     println!("MQTT Disconnect happening...");
                     break;
                 }
-                Ok(rumqttc::Event::Incoming(rumqttc::Packet::Publish(p)))
-                    if !p.dup && !p.retain && !p.payload.is_empty() =>
+                Ok(Event::Incoming(Packet::Publish(packet)))
+                    if !packet.dup && !packet.retain && !packet.payload.is_empty() =>
                 {
                     let nanos = SystemTime::now()
                         .duration_since(SystemTime::UNIX_EPOCH)
                         .unwrap()
                         .as_nanos();
-                    let message = Message::new(nanos, p.topic, p.payload.into());
+                    let message = Message::new(nanos, packet.topic, packet.payload.into());
                     sender.send(message).await.expect("receiver died");
                 }
                 Ok(_) => {}
