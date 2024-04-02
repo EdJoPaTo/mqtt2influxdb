@@ -35,7 +35,7 @@ fn e2e() {
     let message = Message::new(1337, "foo/bar".into(), b"42".to_vec());
     assert_eq!(
         message.into_line_protocol().unwrap(),
-        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topic-1=bar,topicE2=foo,topic-2=foo,topicSegments=2 value=42 1337",
+        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2 value=42 1337",
     );
 }
 
@@ -121,7 +121,6 @@ fn topic_tags(topic: &str) -> String {
     }
     for (i, part) in parts.iter().rev().take(3).enumerate() {
         _ = write!(&mut tags, "topicE{}={part},", i + 1);
-        _ = write!(&mut tags, "topic-{}={part},", i + 1);
     }
     _ = write!(&mut tags, "topicSegments={}", parts.len());
     tags
@@ -131,7 +130,7 @@ fn topic_tags(topic: &str) -> String {
 fn topic_tags_short_works() {
     assert_eq!(
         topic_tags("foo/bar"),
-        "topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topic-1=bar,topicE2=foo,topic-2=foo,topicSegments=2",
+        "topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2",
     );
 }
 
@@ -139,6 +138,6 @@ fn topic_tags_short_works() {
 fn topic_tags_long_works() {
     assert_eq!(
         topic_tags("base/foo/bar/test"),
-        "topic=base/foo/bar/test,topic1=base,topic2=foo,topic3=bar,topic4=test,topicE1=test,topic-1=test,topicE2=bar,topic-2=bar,topicE3=foo,topic-3=foo,topicSegments=4",
+        "topic=base/foo/bar/test,topic1=base,topic2=foo,topic3=bar,topic4=test,topicE1=test,topicE2=bar,topicE3=foo,topicSegments=4",
     );
 }

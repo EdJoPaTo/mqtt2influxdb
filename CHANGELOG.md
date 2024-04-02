@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changes
+
+- Remove deprecated `topic-1` style tags. (deprecated since 0.4.0)
+
 ## [1.0.0] - 2024-02-16
 
 ### Added
