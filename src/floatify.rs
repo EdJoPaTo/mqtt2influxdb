@@ -15,53 +15,28 @@ pub fn floatify(input: &str) -> Option<f64> {
 }
 
 #[cfg(test)]
-fn test_some(input: &str, expected: f64) {
-    float_eq::assert_float_eq!(floatify(input).unwrap(), expected, abs <= 0.1);
+#[rstest::rstest]
+#[case::int("42", 42.0)]
+#[case::float("13.37", 13.37)]
+#[case::bool("true", 1.0)]
+#[case::bool("false", 0.0)]
+#[case::on("on", 1.0)]
+#[case::on("off", 0.0)]
+#[case::units("12.3 °C", 12.3)]
+#[case::units(" 12.3 °C", 12.3)]
+fn test_some(#[case] input: &str, #[case] expected: f64) {
+    float_eq::assert_float_eq!(floatify(dbg!(input)).unwrap(), expected, abs <= 0.001);
 }
 
-#[test]
-fn floatify_int() {
-    test_some("42", 42.0);
-}
-
-#[test]
-fn floatify_float() {
-    test_some("13.37", 13.37);
-}
-
-#[test]
-fn floatify_bool() {
-    test_some("true", 1.0);
-    test_some("false", 0.0);
-}
-
-#[test]
-fn floatify_on() {
-    test_some("on", 1.0);
-    test_some("off", 0.0);
-}
-
-#[test]
-fn floatify_units() {
-    test_some("12.3 °C", 12.3);
-    test_some(" 12.3 °C", 12.3);
-}
-
-#[test]
-fn floatify_empty() {
-    assert_eq!(floatify(""), None);
-    assert_eq!(floatify("  "), None);
-}
-
-#[test]
-fn floatify_string() {
-    assert_eq!(floatify("whatever"), None);
-}
-
-#[test]
-fn floatify_non_finite() {
-    assert_eq!(floatify("nan"), None);
-    assert_eq!(floatify("NaN"), None);
-    assert_eq!(floatify("inf"), None);
-    assert_eq!(floatify("infinity"), None);
+#[cfg(test)]
+#[rstest::rstest]
+#[case::empty("")]
+#[case::empty("  ")]
+#[case::string("whatever")]
+#[case::non_finite("nan")]
+#[case::non_finite("NaN")]
+#[case::non_finite("inf")]
+#[case::non_finite("infinity")]
+fn test_none(#[case] input: &str) {
+    assert_eq!(floatify(dbg!(input)), None);
 }
