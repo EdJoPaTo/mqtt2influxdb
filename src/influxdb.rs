@@ -69,7 +69,7 @@ impl Influxdb {
             url.set_path("/write");
         }
 
-        if let Err(err) = write(&client, url.as_str(), &[]).await {
+        if let Err(err) = write(&client, url.clone(), &[]).await {
             panic!("failed InfluxDB test-write: {err}");
         }
 
@@ -95,7 +95,7 @@ impl Influxdb {
     }
 
     async fn write(&mut self) -> anyhow::Result<()> {
-        write(&self.client, self.write_url.as_str(), &self.linebuffer).await?;
+        write(&self.client, self.write_url.clone(), &self.linebuffer).await?;
         self.last_send = Instant::now();
         println!("sent {} lines", self.linebuffer.len());
         self.linebuffer.clear();
@@ -126,7 +126,7 @@ impl Influxdb {
     }
 }
 
-async fn write(client: &reqwest::Client, url: &str, lines: &[String]) -> anyhow::Result<()> {
+async fn write(client: &reqwest::Client, url: Url, lines: &[String]) -> anyhow::Result<()> {
     let result = client.post(url).body(lines.join("\n")).send().await?;
     let status = result.status();
     if status.is_client_error() || status.is_server_error() {
