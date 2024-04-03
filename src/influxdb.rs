@@ -16,6 +16,7 @@ pub struct Influxdb {
     write_url: Url,
     client: reqwest::Client,
     error_count: u64,
+    verbose: bool,
 
     last_send: Instant,
     max_age: Duration,
@@ -25,6 +26,7 @@ pub struct Influxdb {
 }
 
 impl Influxdb {
+    #[allow(clippy::too_many_arguments)]
     pub async fn new(
         host: Url,
         api_token: Option<&str>,
@@ -33,6 +35,7 @@ impl Influxdb {
         bucket: Option<&str>,
         max_age: Duration,
         max_amount: usize,
+        verbose: bool,
     ) -> Self {
         let mut headers = header::HeaderMap::new();
         headers.insert(
@@ -77,6 +80,7 @@ impl Influxdb {
             write_url: url,
             client,
             error_count: 0,
+            verbose,
 
             last_send: Instant::now(),
             max_age,
@@ -92,6 +96,11 @@ impl Influxdb {
 
     /// Append to the lines that will be written
     pub fn append(&mut self, mut lines: Vec<String>) {
+        if self.verbose {
+            for line in &lines {
+                println!("InfluxDB Line: {line}");
+            }
+        }
         self.linebuffer.append(&mut lines);
     }
 

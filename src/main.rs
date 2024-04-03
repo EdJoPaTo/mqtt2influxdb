@@ -24,6 +24,7 @@ async fn main() {
         matches.influx_bucket.as_deref(),
         Duration::from_secs_f32(matches.buffer_seconds),
         matches.buffer_amount,
+        matches.verbose,
     )
     .await;
     eprintln!("InfluxDB connected: {}", influxdb.get_write_url());
