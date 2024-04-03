@@ -26,7 +26,7 @@ pub struct Influxdb {
 
 impl Influxdb {
     pub async fn new(
-        host: &Url,
+        host: Url,
         api_token: Option<&str>,
         database: Option<&str>,
         org: Option<&str>,
@@ -58,7 +58,7 @@ impl Influxdb {
             .build()
             .unwrap();
 
-        let mut url = host.clone();
+        let mut url = host;
         if let (Some(org), Some(bucket)) = (org, bucket) {
             url.set_path("/api/v2/write");
             url.set_query(Some(&format!("org={org}&bucket={bucket}")));
@@ -84,6 +84,10 @@ impl Influxdb {
             linebuffer: Vec::with_capacity(max_amount),
             max_amount,
         }
+    }
+
+    pub const fn get_write_url(&self) -> &Url {
+        &self.write_url
     }
 
     pub fn push(&mut self, line: String) {

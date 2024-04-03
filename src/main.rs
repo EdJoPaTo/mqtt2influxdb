@@ -15,7 +15,7 @@ async fn main() {
     let matches = cli::Cli::parse();
 
     let mut influxdb = influxdb::Influxdb::new(
-        &matches.influx_host,
+        matches.influx_host,
         matches.influx_token.as_deref(),
         matches.influx_database.as_deref(),
         matches.influx_org.as_deref(),
@@ -24,7 +24,7 @@ async fn main() {
         matches.buffer_amount,
     )
     .await;
-    eprintln!("InfluxDB {} connected.", matches.influx_host);
+    eprintln!("InfluxDB connected: {}", influxdb.get_write_url());
 
     let mqtt_broker = matches.mqtt_broker;
     let (client, mut receiver) = mqtt::connect(
