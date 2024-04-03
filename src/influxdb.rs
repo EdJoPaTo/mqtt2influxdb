@@ -90,8 +90,9 @@ impl Influxdb {
         &self.write_url
     }
 
-    pub fn push(&mut self, line: String) {
-        self.linebuffer.push(line);
+    /// Append to the lines that will be written
+    pub fn append(&mut self, mut lines: Vec<String>) {
+        self.linebuffer.append(&mut lines);
     }
 
     async fn write(&mut self) -> anyhow::Result<()> {

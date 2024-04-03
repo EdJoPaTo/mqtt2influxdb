@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Parse payloads with JSON and MessagePack, adding `key{depth}={name}` as tags (besides the topic tags). Example: `{"foo": {"bar": 1337}}` → `key1=example,key2=bar`
+
 ### Changes
 
 - Show InfluxDB write URL on startup instead of InfluxDB host

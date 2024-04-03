@@ -10,6 +10,7 @@ mod floatify;
 mod influxdb;
 mod message;
 mod mqtt;
+mod payload;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -54,11 +55,7 @@ async fn main() {
         }
 
         match receiver.try_recv() {
-            Ok(message) => {
-                if let Some(line) = message.into_line_protocol() {
-                    influxdb.push(line);
-                }
-            }
+            Ok(message) => influxdb.append(message.into_line_protocol()),
             Err(TryRecvError::Empty) => sleep(Duration::from_millis(50)).await,
             Err(TryRecvError::Disconnected) => {
                 eprintln!("MQTT sender is gone");
@@ -70,9 +67,7 @@ async fn main() {
     }
 
     while let Some(message) = receiver.recv().await {
-        if let Some(line) = message.into_line_protocol() {
-            influxdb.push(line);
-        }
+        influxdb.append(message.into_line_protocol());
     }
     influxdb.async_drop().await;
 
