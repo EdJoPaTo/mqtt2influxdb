@@ -1,5 +1,7 @@
 use std::fmt::Write;
 
+use crate::floatify::floatify;
+
 #[derive(Debug)]
 pub struct Message {
     nanos: u128,
@@ -37,74 +39,6 @@ fn e2e() {
         message.into_line_protocol().unwrap(),
         "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2 value=42 1337",
     );
-}
-
-/// Assume floats of the payload, otherwise return None
-fn floatify(payload: &str) -> Option<f64> {
-    match payload {
-        "true" | "True" | "TRUE" | "on" | "On" | "ON" | "online" | "Online" | "ONLINE" => Some(1.0),
-        "false" | "False" | "FALSE" | "off" | "Off" | "OFF" | "offline" | "Offline" | "OFFLINE" => {
-            Some(0.0)
-        }
-        payload => payload
-            .split(char::is_whitespace)
-            .find(|part| !part.is_empty())? // lazy trim
-            .parse::<f64>()
-            .ok()
-            .filter(|float| float.is_finite()),
-    }
-}
-
-#[cfg(test)]
-fn test_floatify(input: &str, expected: f64) {
-    float_eq::assert_float_eq!(floatify(input).unwrap(), expected, abs <= 0.1);
-}
-
-#[test]
-fn floatify_int() {
-    test_floatify("42", 42.0);
-}
-
-#[test]
-fn floatify_float() {
-    test_floatify("13.37", 13.37);
-}
-
-#[test]
-fn floatify_bool() {
-    test_floatify("true", 1.0);
-    test_floatify("false", 0.0);
-}
-
-#[test]
-fn floatify_on() {
-    test_floatify("on", 1.0);
-    test_floatify("off", 0.0);
-}
-
-#[test]
-fn floatify_units() {
-    test_floatify("12.3 °C", 12.3);
-    test_floatify(" 12.3 °C", 12.3);
-}
-
-#[test]
-fn floatify_empty() {
-    assert!(floatify("").is_none());
-    assert!(floatify("  ").is_none());
-}
-
-#[test]
-fn floatify_string() {
-    assert!(floatify("whatever").is_none());
-}
-
-#[test]
-fn floatify_non_finite() {
-    assert!(floatify("nan").is_none());
-    assert!(floatify("NaN").is_none());
-    assert!(floatify("inf").is_none());
-    assert!(floatify("infinity").is_none());
 }
 
 /// Influx Line Protocol Escape

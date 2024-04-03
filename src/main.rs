@@ -6,6 +6,7 @@ use tokio::time::sleep;
 
 mod cli;
 mod exit_handler;
+mod floatify;
 mod influxdb;
 mod message;
 mod mqtt;
