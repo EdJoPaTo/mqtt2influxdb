@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Parse payloads with JSON and MessagePack, adding `key{depth}={name}` as tags (besides the topic tags). Example: `{"foo": {"bar": 1337}}` → `key1=example,key2=bar`
+- Parse payloads with JSON and MessagePack, adding `key{depth}={name}` as tags (besides the topic tags). Example: `{"foo": {"bar": 1337}}` → `key1=foo,key2=bar`
 - Print InfluxDB Line Protocol data when `--verbose`
 
 ### Changes

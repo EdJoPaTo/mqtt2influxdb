@@ -15,7 +15,7 @@ Therefore, I haven't tested this tool with InfluxDB for some time.
 - Telegraf uses a lot of resources. This tool is easily able to run on a Raspberry Pi 1 without any problems.
 - Some devices use values like `true` or `on` which are annoying to visualize. This tool migrates values like this into `1.0` and `0.0`.
 - Telegraf publishes the values with a `topic` tag. This is fine but results in a lot of regular expressions in Grafana. This tool also sets the tags `topic1`, `topic2`, …; from the end with `topicE1`, `topicE2`, … and `topicSegments` for the amount of segments. For example for topic `foo/bar/test` this results in the following tags: `topic1=foo`, `topic2=bar`, `topic3=test`, from the end `topicE1=test`, `topicE2=bar`, `topicE3=foo` and `topicSegments=3`. Creating queries with them is way easier compared to regex queries and probably also faster to compute for InfluxDB.
-- Parses payloads with JSON and MessagePack, adding `key{depth}={name}` as tags (besides the topic tags). Example: `{"foo": {"bar": 1337}}` → `key1=example,key2=bar`
+- Parses payloads with JSON and MessagePack, adding `key{depth}={name}` as tags (besides the topic tags). Example: `{"foo": {"bar": 1337}}` → `key1=foo,key2=bar`
 
 ## Usage
 
