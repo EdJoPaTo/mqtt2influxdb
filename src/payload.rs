@@ -38,6 +38,7 @@ impl<'s> std::fmt::Display for Key<'s> {
 }
 impl<'s> TryFrom<&'s rmpv::Value> for Key<'s> {
     type Error = ();
+
     fn try_from(value: &'s rmpv::Value) -> Result<Self, Self::Error> {
         use rmpv::Value;
         fn inner(value: &Value) -> Option<Key> {
