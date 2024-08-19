@@ -8,7 +8,9 @@ authors = ["EdJoPaTo <mqtt2influxdb-rust@edjopato.de>"]
 edition = "2021"
 
 [lints.rust]
+single_use_lifetimes = "warn"
 unsafe_code = "forbid"
+unused_qualifications = "warn"
 [lints.clippy]
 pedantic = "warn"
 nursery = "warn"

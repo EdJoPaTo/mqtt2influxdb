@@ -9,7 +9,7 @@ impl ExitHandler {
         ctrlc::set_handler({
             let quit = quit.clone();
             move || {
-                if quit.swap(true, std::sync::atomic::Ordering::SeqCst) {
+                if quit.swap(true, Ordering::SeqCst) {
                     eprintln!("Force exit");
                     std::process::exit(-1);
                 }
