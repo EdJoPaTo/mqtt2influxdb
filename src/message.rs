@@ -56,10 +56,11 @@ fn e2e(#[case] payload: &[u8], #[case] expected: &[&str]) {
 fn e2e_json() {
     let payload = serde_json::to_vec(&serde_json::json!({"a": 42, "b": {"c": 666}})).unwrap();
     let message = Message::new(1337, "foo/bar".into(), payload);
-    assert_eq!(message.into_line_protocol(), [
+    let expected = [
         "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=a value=42 1337",
         "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=b,key2=c value=666 1337",
-    ]);
+    ];
+    assert_eq!(message.into_line_protocol(), expected);
 }
 
 /// Influx Line Protocol Escape
