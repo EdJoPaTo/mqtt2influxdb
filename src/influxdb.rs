@@ -1,5 +1,6 @@
 use std::time::{Duration, Instant};
 
+use anyhow::Context as _;
 use reqwest::header;
 use tokio::time::sleep;
 use url::Url;
@@ -73,7 +74,7 @@ impl Influxdb {
         }
 
         if let Err(err) = write(&client, url.clone(), &[]).await {
-            panic!("failed InfluxDB test-write: {err}");
+            panic!("failed InfluxDB test-write: {err:?}");
         }
 
         Self {
@@ -117,7 +118,7 @@ impl Influxdb {
             if let Err(err) = self.write().await {
                 self.error_count += 1;
                 eprintln!(
-                    "InfluxDB write failed (error_count: {}): {err}",
+                    "InfluxDB write failed (error_count: {}): {err:#}",
                     self.error_count
                 );
                 let error_millis = (self.error_count * 91).min(30_000); // Up to 30
@@ -137,16 +138,21 @@ impl Influxdb {
 }
 
 async fn write(client: &reqwest::Client, url: Url, lines: &[String]) -> anyhow::Result<()> {
-    let result = client.post(url).body(lines.join("\n")).send().await?;
+    let result = client
+        .post(url)
+        .body(lines.join("\n"))
+        .send()
+        .await
+        .context("Could not send HTTP request")?;
     let status = result.status();
     if status.is_client_error() || status.is_server_error() {
-        Err(result.text().await.map_or_else(
-            |_| anyhow::anyhow!("Unknown InfluxDB write error"),
-            |text| anyhow::anyhow!("InfluxDB write error: {text:?}"),
-        ))
-    } else {
-        Ok(())
+        let reason = result
+            .text()
+            .await
+            .context("Could not get reason from error response body")?;
+        anyhow::bail!("InfluxDB specified reason ({status}): {reason}");
     }
+    Ok(())
 }
 
 impl Drop for Influxdb {
