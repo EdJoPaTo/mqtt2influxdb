@@ -57,7 +57,7 @@ impl Influxdb {
         let client = reqwest::ClientBuilder::new()
             .default_headers(headers)
             .timeout(Duration::from_secs(5))
-            .user_agent(USER_AGENT)
+            .user_agent(header::HeaderValue::from_static(USER_AGENT))
             .build()
             .unwrap();
 
