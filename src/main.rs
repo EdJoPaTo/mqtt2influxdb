@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use clap::Parser;
+use clap::Parser as _;
 use tokio::sync::mpsc::error::TryRecvError;
 use tokio::time::sleep;
 
