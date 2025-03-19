@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Added
+## [2.1.0] - 2025-03-19
+
+### Added
 
 - Build container based on alpine and for arm64
 
