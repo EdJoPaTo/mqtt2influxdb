@@ -8,17 +8,14 @@ pub enum Payload {
 }
 
 impl Payload {
-    #[allow(clippy::option_if_let_else)]
     pub fn new(payload: Vec<u8>) -> Option<Self> {
         match String::from_utf8(payload) {
-            Ok(payload) => match serde_json::from_str(&payload) {
-                Ok(json) => Some(Self::Json(json)),
-                Err(_) => Some(Self::String(payload)),
-            },
-            Err(err) => match rmpv::decode::read_value(&mut err.as_bytes()) {
-                Ok(messagepack) => Some(Self::MessagePack(messagepack)),
-                Err(_) => None,
-            },
+            Ok(payload) => {
+                Some(serde_json::from_str(&payload).map_or(Self::String(payload), Self::Json))
+            }
+            Err(err) => rmpv::decode::read_value(&mut err.as_bytes())
+                .ok()
+                .map(Self::MessagePack),
         }
     }
 }
