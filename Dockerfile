@@ -1,9 +1,7 @@
-FROM docker.io/library/rust:1-bookworm AS builder
+FROM docker.io/library/rust:1-alpine AS builder
 WORKDIR /build
-RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apk upgrade --no-cache \
+	&& apk add --no-cache musl-dev
 
 COPY Cargo.toml Cargo.lock ./
 
@@ -17,11 +15,8 @@ COPY . ./
 RUN cargo build --release --locked --offline
 
 
-FROM docker.io/library/debian:bookworm-slim AS final
-RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
+FROM docker.io/library/alpine:3 AS final
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Build container based on alpine and for arm64
+
 ### Fixed
 
 - Improve InfluxDB write error output

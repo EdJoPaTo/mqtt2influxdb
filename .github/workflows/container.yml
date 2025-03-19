@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   # Build regularly in order to have up to date base image in the edge image
   schedule:
-    - cron: '42 2 * * 6' # weekly on Saturday 2:42 UTC
+    - cron: "42 2 * * 6" # weekly on Saturday 2:42 UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -52,7 +52,10 @@ jobs:
 
       - uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64
+          platforms: linux/amd64, linux/arm64/v8
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          no-cache-filters: final
