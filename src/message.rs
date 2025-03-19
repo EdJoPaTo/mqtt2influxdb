@@ -9,7 +9,6 @@ pub struct Message {
 }
 
 impl Message {
-    #[allow(clippy::option_if_let_else)]
     pub const fn new(nanos: u128, topic: String, payload: Vec<u8>) -> Self {
         Self {
             nanos,
