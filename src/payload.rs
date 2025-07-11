@@ -38,7 +38,7 @@ impl<'s> TryFrom<&'s rmpv::Value> for Key<'s> {
 
     fn try_from(value: &'s rmpv::Value) -> Result<Self, Self::Error> {
         use rmpv::Value;
-        fn inner(value: &Value) -> Option<Key> {
+        fn inner(value: &Value) -> Option<Key<'_>> {
             match value {
                 Value::Boolean(true) => Some(Key::Int(1)),
                 Value::Boolean(false) | Value::Nil => Some(Key::Int(0)),
