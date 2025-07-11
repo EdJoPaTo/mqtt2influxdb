@@ -5,7 +5,7 @@ version = "2.1.0"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/EdJoPaTo/mqtt2influxdb"
 authors = ["EdJoPaTo <mqtt2influxdb-rust@edjopato.de>"]
-edition = "2021"
+edition = "2024"
 
 [lints.rust]
 single_use_lifetimes = "warn"
@@ -14,6 +14,7 @@ unused_qualifications = "warn"
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
+allow_attributes = "warn"
 min_ident_chars = "warn"
 unused_trait_names = "warn"
 

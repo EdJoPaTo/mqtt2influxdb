@@ -27,7 +27,7 @@ pub struct Influxdb {
 }
 
 impl Influxdb {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(clippy::too_many_arguments)]
     pub async fn new(
         host: Url,
         api_token: Option<&str>,

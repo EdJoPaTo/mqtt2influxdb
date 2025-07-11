@@ -200,7 +200,7 @@ mod tests {
     }
 
     mod json {
-        use serde_json::{json, Number, Value};
+        use serde_json::{Number, Value, json};
 
         use super::*;
 

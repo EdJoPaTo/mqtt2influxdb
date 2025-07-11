@@ -1,7 +1,7 @@
 use std::time::{Duration, SystemTime};
 
 use rumqttc::{AsyncClient, Event, MqttOptions, Outgoing, Packet, QoS};
-use tokio::sync::mpsc::{channel, Receiver};
+use tokio::sync::mpsc::{Receiver, channel};
 use tokio::task;
 use tokio::time::sleep;
 
