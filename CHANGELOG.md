@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2025-08-29
+
 ### Added
 
 - `keySegments` shows the amount of segments in the payload key. `keySegments=0` is set when its a simple, single value payload.
