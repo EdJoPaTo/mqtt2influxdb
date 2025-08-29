@@ -29,7 +29,9 @@ impl Message {
         let Self { nanos, .. } = self;
         match values {
             Values::Single(value) => {
-                vec![format!("measurement,{topic_tags} value={value} {nanos}")]
+                vec![format!(
+                    "measurement,{topic_tags},keySegments=0 value={value} {nanos}"
+                )]
             }
             Values::Many(many) => many
                 .into_iter()
@@ -44,7 +46,7 @@ impl Message {
 
 #[cfg(test)]
 #[rstest::rstest]
-#[case::plain_number(b"42", &["measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2 value=42 1337"])]
+#[case::plain_number(b"42", &["measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,keySegments=0 value=42 1337"])]
 #[case::string(b"whatever", &[])]
 fn e2e(#[case] payload: &[u8], #[case] expected: &[&str]) {
     let message = Message::new(1337, "foo/bar".into(), payload.to_vec());
@@ -56,8 +58,8 @@ fn e2e_json() {
     let payload = serde_json::to_vec(&serde_json::json!({"a": 42, "b": {"c": 666}})).unwrap();
     let message = Message::new(1337, "foo/bar".into(), payload);
     let expected = [
-        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=a value=42 1337",
-        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=b,key2=c value=666 1337",
+        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=a,keySegments=1 value=42 1337",
+        "measurement,topic=foo/bar,topic1=foo,topic2=bar,topicE1=bar,topicE2=foo,topicSegments=2,key1=b,key2=c,keySegments=2 value=666 1337",
     ];
     assert_eq!(message.into_line_protocol(), expected);
 }
@@ -105,6 +107,8 @@ fn key_tags(keys: &[crate::payload::Key<'_>]) -> String {
         }
         _ = write!(tags, "key{}={key}", index.saturating_add(1));
     }
+    assert!(!keys.is_empty()); // start with a ,
+    _ = write!(tags, ",keySegments={}", keys.len());
     tags
 }
 
@@ -113,5 +117,5 @@ fn key_tags_works() {
     use crate::payload::Key;
     let keys = [Key::String("foo"), Key::String("bar"), Key::Int(42)];
     let result = key_tags(&keys);
-    assert_eq!(result, "key1=foo,key2=bar,key3=42");
+    assert_eq!(result, "key1=foo,key2=bar,key3=42,keySegments=3");
 }
