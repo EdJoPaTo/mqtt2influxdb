@@ -16,9 +16,14 @@ RUN cargo build --release --locked --offline
 
 
 FROM docker.io/library/alpine:3 AS final
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache \
+    && addgroup -S -g 923 runner \
+    && adduser -S -D -u 923 -G runner runner \
+    && rm -f -- /etc/*-
 
 WORKDIR /app
 
 COPY --from=builder /build/target/release/mqtt2influxdb /usr/local/bin/
+
+USER runner
 ENTRYPOINT ["mqtt2influxdb"]
