@@ -107,7 +107,7 @@ fn key_tags(keys: &[crate::payload::Key<'_>]) -> String {
         }
         _ = write!(tags, "key{}={key}", index.saturating_add(1));
     }
-    assert!(!keys.is_empty()); // start with a ,
+    assert_ne!(keys, []); // start with a ,
     _ = write!(tags, ",keySegments={}", keys.len());
     tags
 }
